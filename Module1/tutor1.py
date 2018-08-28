@@ -155,7 +155,7 @@ def tfex8(size=5, steps=50, tvect=None,learning_rate = 0.5,showint=10):
         quickrun4([training_operator],[w,b,y],session=sess,feed_dict=feeder,step=step,show_interval=showint)
     TFT.close_session(sess)
 
-tfex8()
+tfex8(steps=100000, showint=100000)
 
 
 
