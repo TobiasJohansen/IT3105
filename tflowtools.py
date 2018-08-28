@@ -54,7 +54,7 @@ def fireup_tensorboard(logdir):
     os.system('tensorboard --logdir='+logdir)
 
 def clear_tensorflow_log(logdir):
-    os.system('rm ' + logdir +'/events.out.*')
+    os.system('del ' + logdir + r'\events.out.*')
 
 # ***** GENERATING Simple DATA SETS for MACHINE LEARNING *****
 
@@ -71,7 +71,7 @@ def int_to_bits(i,num_bits):
     return [int(b) for b in '0' * (num_bits - len(s)) + s]
 
 def all_ints_to_bits(num_bits):
-    return [int_to_bits(i) for i in range(2**num_bits)]
+    return [int_to_bits(i, num_bits) for i in range(2**num_bits)]
 
 # Convert an integer k to a sparse vector in which all bits are "off" except the kth bit.  Note: this
 # is zero-based, so the one-hot vector for 0 is 10000..., and for 1 is 010000..
