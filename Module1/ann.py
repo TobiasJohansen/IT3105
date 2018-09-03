@@ -1,3 +1,4 @@
+import casemanager
 import numpy as np
 import tensorflow as tf
 
@@ -5,7 +6,7 @@ class ANN():
     
     activation_functions = {
         "relu": lambda features, name : tf.nn.relu(features, name),
-        "softmax": lambda features, name : tf.nn.softmax(features, name)
+        "softmax": lambda features, name : tf.nn.softmax(features, name = name)
     }
 
     def __init__(self, parameters):
@@ -41,15 +42,25 @@ class ANN():
         self.optimizer = tf.train.GradientDescentOptimizer(0.03)
         self.trainer = self.optimizer.minimize(self.error)
 
-    def run(self, inputs, targets):
+    def run(self):
+        cases = casemanager.get_cases(self.parameters["data_source"])
+        inputs = cases[:,:-1]
+        targets = cases[:,-1]
+
         sess = tf.Session()
         sess.run(tf.global_variables_initializer())
         
-        feeder = {self.layers[0]["layer"]: inputs, self.target: targets}
-        e = sess.run(self.error, feeder)
+        feeder = {self.layers[0]["layer"]: inputs, self.target: targets.reshape(-1, 1)}
+        
+        print(sess.run(self.layers[1]["b"], feeder))
+        for i in range(5):
+            sess.run(self.trainer, feeder)
+            print(sess.run(self.error, feeder))
+        
+        #e = sess.run(self.error, feeder)
 
-        while e > 0.02:
-            result = sess.run([self.error, self.trainer], feeder)
-            e = result[0]
-            print("MSE:", e)
-        print(sess.run(self.layers[-1]["layer"], feeder)[0])
+        #while e > 0.02:
+        #    result = sess.run([self.error, self.trainer], feeder)
+        #    e = result[0]
+        #    print("MSE:", e)
+        #print(sess.run(self.layers[-1]["layer"], feeder)[0])
