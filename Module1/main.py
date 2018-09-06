@@ -5,7 +5,7 @@ import tensorflow as tf
 import tflowtools as tft
 
 parameters = {
-    "network_dimensions": [11, 6, 1],
+    "network_dimensions": [11, 8, 6],
     "hidden_activation_function": "relu",
     "output_activation_function": "softmax",
     "cost_function": "mse", 
@@ -16,14 +16,4 @@ parameters = {
 }
 
 network = ANN(parameters)
-
-
-#cases = casemanager.get_cases(parameters["data_source"])
-#inputs = cases[:,:-1]
-#targets = cases[:,-1]
-
-#print(inputs.shape)
-#print(targets.reshape(-1, 1).shape)
-
-
 network.run()

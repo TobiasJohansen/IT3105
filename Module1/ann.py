@@ -1,6 +1,7 @@
 import casemanager
 import numpy as np
 import tensorflow as tf
+import tflowtools as tft
 
 class ANN():
     
@@ -39,28 +40,22 @@ class ANN():
         # Training
         self.target = tf.placeholder(tf.float64, shape = (None, network_dimensions[-1]), name = "Target")
         self.error = tf.reduce_mean(tf.square(self.target - self.layers[-1]["layer"]), name = "MSE")
-        self.optimizer = tf.train.GradientDescentOptimizer(0.03)
+        self.optimizer = tf.train.GradientDescentOptimizer(0.01)
         self.trainer = self.optimizer.minimize(self.error)
 
     def run(self):
         cases = casemanager.get_cases(self.parameters["data_source"])
         inputs = cases[:,:-1]
         targets = cases[:,-1]
+        print(self.parameters["network_dimensions"][-1])
+        one_hot_targets = [tft.int_to_one_hot(int(target) - 3, self.parameters["network_dimensions"][-1]) for target in targets]
 
         sess = tf.Session()
         sess.run(tf.global_variables_initializer())
         
-        feeder = {self.layers[0]["layer"]: inputs, self.target: targets.reshape(-1, 1)}
+        feeder = {self.layers[0]["layer"]: inputs, self.target: one_hot_targets}
         
         print(sess.run(self.layers[1]["b"], feeder))
-        for i in range(5):
-            sess.run(self.trainer, feeder)
-            print(sess.run(self.error, feeder))
-        
-        #e = sess.run(self.error, feeder)
-
-        #while e > 0.02:
-        #    result = sess.run([self.error, self.trainer], feeder)
-        #    e = result[0]
-        #    print("MSE:", e)
-        #print(sess.run(self.layers[-1]["layer"], feeder)[0])
+        while True:
+            o,_ =sess.run([self.layers[-1]["layer"], self.trainer], feeder)
+            print(o[0:5], "\n")
