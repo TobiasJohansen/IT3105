@@ -40,22 +40,27 @@ class ANN():
         # Training
         self.target = tf.placeholder(tf.float64, shape = (None, network_dimensions[-1]), name = "Target")
         self.error = tf.reduce_mean(tf.square(self.target - self.layers[-1]["layer"]), name = "MSE")
-        self.optimizer = tf.train.GradientDescentOptimizer(0.01)
+        self.optimizer = tf.train.AdamOptimizer()
+        #self.optimizer = tf.train.GradientDescentOptimizer(0.001)
         self.trainer = self.optimizer.minimize(self.error)
 
     def run(self):
         cases = casemanager.get_cases(self.parameters["data_source"])
         inputs = cases[:,:-1]
-        targets = cases[:,-1]
-        print(self.parameters["network_dimensions"][-1])
-        one_hot_targets = [tft.int_to_one_hot(int(target) - 3, self.parameters["network_dimensions"][-1]) for target in targets]
+        targets = [int(target) - 3 for target in cases[:,-1]]
+        one_hot_targets = [tft.int_to_one_hot(target, self.parameters["network_dimensions"][-1]) for target in targets]
 
         sess = tf.Session()
         sess.run(tf.global_variables_initializer())
         
         feeder = {self.layers[0]["layer"]: inputs, self.target: one_hot_targets}
         
-        print(sess.run(self.layers[1]["b"], feeder))
         while True:
-            o,_ =sess.run([self.layers[-1]["layer"], self.trainer], feeder)
-            print(o[0:5], "\n")
+            predictions,_ = sess.run([self.layers[-1]["layer"], self.trainer], feeder)
+            accuracy = 0
+            for res in sess.run(tf.nn.in_top_k(predictions, targets, 1)):
+                if res == 1: 
+                    accuracy += 1
+            print(accuracy/len(targets))
+
+            
