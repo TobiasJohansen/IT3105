@@ -7,12 +7,13 @@ class GANN():
     def __init__(self, dimensions):
 
         # Build the network
+        self.input = tf.placeholder(tf.float64, shape = (None, dimensions[0]), name = "input_layer")
         self.modules = []
-        input = None
-        for i, dimension in enumerate(dimensions):
-            self.modules.append(self.GANNModule(i, dimension, input))
+        input = self.input
+        for i, dimension in enumerate(dimensions[1:-1]):
+            self.modules.append(self.GANNModule(input, dimension, "hidden_layer_" + str(i + 1)))
             input = self.modules[i].output
-        self.input = self.modules[0].output
+        self.modules.append(self.GANNModule(input, dimensions[-1], "output_layer"))
         self.output = self.modules[-1].output
 
         # Training
@@ -32,22 +33,15 @@ class GANN():
         
         feeder = {self.input: inputs, self.target: one_hot_targets}
 
-        for i in range(epochs):
-            _,r = sess.run([self.trainer, self.error], feeder)
+        for _ in range(epochs):
+            _, r = sess.run([self.trainer, self.error], feeder)
             print(r)
 
     class GANNModule():
-        def __init__(self, index, dimension, input):
+        def __init__(self, input, dimension, name):
+            self.weights = tf.Variable(np.random.uniform(-.1, .1, size = (input.get_shape().as_list()[1], dimension)), name = name + "_weights")
+            self.bias = tf.Variable(np.random.uniform(-.1, .1, size = dimension), name = name + "_biases")
+            self.output = tf.nn.relu(tf.matmul(input, self.weights) + self.bias, name = name + "_output")
 
-            # If input layer
-            if not index:
-                self.output = tf.placeholder(tf.float64, shape = (None, dimension), name = "input")
-            
-            # If not input layer
-            else:
-                self.weights = tf.Variable(np.random.uniform(-.1, .1, size = (input.get_shape().as_list()[1], dimension)), name = "w" + str(index + 1))
-                self.bias = tf.Variable(np.random.uniform(-.1, .1, size = dimension), name = "b" + str(index + 1))
-                self.output = tf.nn.relu(tf.matmul(input, self.weights) + self.bias, "hidden_layer" + str(index + 1))
-
-gann = GANN([11, 8, 6])
-gann.run(100)
+gann = GANN([11, 80, 80, 6])
+gann.run(1000)
