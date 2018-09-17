@@ -39,9 +39,10 @@ class GANN():
         self.trainer = self.optimizer.minimize(self.error)
 
     def run(self, epochs):
-        self.casemanager.train_cases
+        inputs = self.casemanager.train_cases[:,0].tolist()
+        targets = self.casemanager.train_cases[:,1].tolist()
 
-        feeder = {self.input: self.casemanager.inputs, self.target: self.casemanager.one_hot_targets}
+        feeder = {self.input: inputs, self.target: targets}
 
         sess = tf.Session()
         sess.run(tf.global_variables_initializer())
