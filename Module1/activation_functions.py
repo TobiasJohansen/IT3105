@@ -1,3 +1,4 @@
 import tensorflow as tf
 
-Relu = lambda input : tf.nn.relu(input)
+ReLU = lambda input, name : tf.nn.relu(input, name = name + "_relu")
+Softmax = lambda input, name : tf.nn.softmax(input, name = name + "_softmax")

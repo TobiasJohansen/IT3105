@@ -2,7 +2,7 @@ import numpy as np
 
 class Casemanager():
     def __init__(self, datasource, validation_fraction, test_fraction):
-        cases = datasource() if not isinstance(datasource, list) else datasource[0](*datasource[1:])  
+        cases = datasource["function"](**datasource["parameters"])
         
         print(cases[0])
 

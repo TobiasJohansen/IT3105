@@ -2,23 +2,7 @@ import numpy as np
 import tensorflow as tf
 import tflowtools as tft
 
-activation_functions = {
-    "relu": lambda input, name : tf.nn.relu(input, name=name),
-    "softmax": lambda input, name : tf.nn.softmax(input, name=name)
-}
 
-cost_functions = {
-    "mse": lambda target, output : tf.losses.mean_squared_error(target, output),
-    "sigmoid_cross_entropy": lambda target, output : tf.losses.sigmoid_cross_entropy(target, output),
-    "softmax_cross_entropy": lambda target, output : tf.losses.softmax_cross_entropy(target, output)      
-}
-
-optimizers = {
-    "adagrad": lambda learning_rate, name : tf.train.AdagradOptimizer(learning_rate, name = name),
-    "adam": lambda learning_rate, name : tf.train.AdamOptimizer(learning_rate, name = name),
-    "gradient_descent": lambda learning_rate, name : tf.train.GradientDescentOptimizer(learning_rate, name = name),
-    "rms_prop": lambda learning_rate, name : tf.train.RMSPropOptimizer(learning_rate, name = name)    
-}
 
 class GANN():
     def __init__(self, network_dimensions, hidden_activation_function, output_activation_function, cost_function, learning_rate, 
@@ -49,10 +33,9 @@ class GANN():
         self.output = self.modules[-1].output
 
     def configure_training(self):
-        # Configure Training
         self.target = tf.placeholder(tf.float64, shape = (None, self.network_dimensions[-1]), name = "target")
-        self.error = cost_functions[self.cost_function](self.output, self.target)
-        self.optimizer = optimizers[self.optimizer](self.learning_rate, self.optimizer)
+        self.error = self.cost_function(self.output, self.target)
+        self.optimizer = self.optimizer(self.learning_rate)
         self.trainer = self.optimizer.minimize(self.error)
 
     def run(self, epochs):
@@ -74,7 +57,6 @@ class GANN():
             self.bias = tf.Variable(np.random.uniform(initial_weight_range[0], initial_weight_range[1], 
                                                          size = dimension), 
                                                          name = name + "_biases")
-            self.output = activation_functions[activation_function](tf.matmul(input, self.weights) + self.bias, 
-                                                                    name = name + "_" + activation_function)
+            self.output = activation_function(tf.matmul(input, self.weights) + self.bias, name) 
 
 
