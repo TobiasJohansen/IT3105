@@ -31,21 +31,35 @@ class GANN():
 
     def configure_training(self):
         self.target = tf.placeholder(tf.float64, shape = (None, self.network_dimensions[-1]), name = "target")
-        self.error = self.cost_function(self.output, self.target)
+        self.error = self.cost_function(self.target, self.output)
         self.optimizer = self.optimizer(self.learning_rate)
         self.trainer = self.optimizer.minimize(self.error)
 
-    def run(self, steps):
-        inputs = self.casemanager.train_cases[:,0].tolist()
-        targets = self.casemanager.train_cases[:,1].tolist()
-
-        feeder = {self.input: inputs, self.target: targets}
-
+    def do_training(self, steps, minibatch_size, validation_interval):
+        
         sess = tf.Session()
         sess.run(tf.global_variables_initializer())
-        for _ in range(steps):
-            _, r = sess.run([self.trainer, self.error], feeder)
-            print(r)
+
+        for i in range(steps):
+            
+            # Train
+            minibatch = self.casemanager.get_minibatch(self.casemanager.train_cases, i, minibatch_size)
+            inputs = list(np.array(minibatch)[:,0])
+            targets = list(np.array(minibatch)[:,1])
+            feeder = {self.input: inputs, self.target: targets}
+            sess.run(self.trainer, feeder)
+
+            # Validate
+            minibatches_ran = i + 1
+            if minibatches_ran % validation_interval == 0:
+                cases = self.casemanager.validation_cases
+                inputs = list(np.array(cases)[:,0])
+                targets = list(np.array(cases)[:,1])
+                feeder = {self.input: inputs, self.target: targets}
+                predictions = sess.run(self.output, feeder)
+                top_k = tf.nn.in_top_k(predictions, self.casemanager.get_one_hot_vectors_as_ints(targets), 1)
+                correct = np.sum(sess.run(top_k))
+                print("\nValidation test after {0} minibatches: {1:.2f}%".format(minibatches_ran, 100.0 * correct / len(cases)))
 
     class GANNModule():
         def __init__(self, initial_weight_range, input, dimension, name, activation_function):
