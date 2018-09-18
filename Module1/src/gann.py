@@ -1,8 +1,5 @@
 import numpy as np
 import tensorflow as tf
-import tflowtools as tft
-
-
 
 class GANN():
     def __init__(self, network_dimensions, hidden_activation_function, output_activation_function, cost_function, learning_rate, 
@@ -38,7 +35,7 @@ class GANN():
         self.optimizer = self.optimizer(self.learning_rate)
         self.trainer = self.optimizer.minimize(self.error)
 
-    def run(self, epochs):
+    def run(self, steps):
         inputs = self.casemanager.train_cases[:,0].tolist()
         targets = self.casemanager.train_cases[:,1].tolist()
 
@@ -46,7 +43,7 @@ class GANN():
 
         sess = tf.Session()
         sess.run(tf.global_variables_initializer())
-        for _ in range(epochs):
+        for _ in range(steps):
             _, r = sess.run([self.trainer, self.error], feeder)
             print(r)
 
