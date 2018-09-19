@@ -1,3 +1,4 @@
-__pycache__/
-.vscode/
-probeview/
+__pycache__
+.vscode
+data
+probeview

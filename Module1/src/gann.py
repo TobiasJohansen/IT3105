@@ -59,7 +59,7 @@ class GANN():
                 predictions = sess.run(self.output, feeder)
                 top_k = tf.nn.in_top_k(predictions, self.casemanager.get_one_hot_vectors_as_ints(targets), 1)
                 correct = np.sum(sess.run(top_k))
-                print("\nValidation test after {0} minibatches: {1:.2f}%".format(minibatches_ran, 100.0 * correct / len(cases)))
+                print("Validation test after {0} minibatches: {1:.2f}%".format(minibatches_ran, 100.0 * correct / len(cases)))
 
     class GANNModule():
         def __init__(self, initial_weight_range, input, dimension, name, activation_function):
