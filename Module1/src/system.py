@@ -15,5 +15,6 @@ def run(network_dimensions, hidden_activation_function, output_activation_functi
     
     gann = GANN(network_dimensions, hidden_activation_function, output_activation_function, cost_function, learning_rate, 
                  initial_weight_range, optimizer, casemanager)
-                 
+
     gann.do_training(steps, minibatch_size, validation_interval)
+    

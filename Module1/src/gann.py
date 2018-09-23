@@ -1,5 +1,10 @@
 import numpy as np
+import os
 import tensorflow as tf
+import time
+
+# Turn off tensorflow information
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3' 
 
 class GANN():
     def __init__(self, network_dimensions, hidden_activation_function, output_activation_function, cost_function, learning_rate, 
@@ -37,29 +42,29 @@ class GANN():
 
     def do_training(self, steps, minibatch_size, validation_interval):
         
+        print("\n== TRAINING ==")        
+        
+        # Validation cases
+        validation_inputs, validation_targets, validation_targets_as_ints = self.casemanager.validation_cases
+
         sess = tf.Session()
         sess.run(tf.global_variables_initializer())
 
         for i in range(steps):
             
             # Train
-            minibatch = self.casemanager.get_minibatch(self.casemanager.train_cases, i, minibatch_size)
-            inputs = list(np.array(minibatch)[:,0])
-            targets = list(np.array(minibatch)[:,1])
+            inputs, targets = self.casemanager.get_minibatch(minibatch_size)
             feeder = {self.input: inputs, self.target: targets}
             sess.run(self.trainer, feeder)
 
-            # Validate
+            # Consider validation
             minibatches_ran = i + 1
             if minibatches_ran % validation_interval == 0:
-                cases = self.casemanager.validation_cases
-                inputs = list(np.array(cases)[:,0])
-                targets = list(np.array(cases)[:,1])
-                feeder = {self.input: inputs, self.target: targets}
+                feeder = {self.input: validation_inputs, self.target: validation_targets}
                 predictions = sess.run(self.output, feeder)
-                top_k = tf.nn.in_top_k(predictions, self.casemanager.get_one_hot_vectors_as_ints(targets), 1)
-                correct = np.sum(sess.run(top_k))
-                print("Validation test after {0} minibatches: {1:.2f}%".format(minibatches_ran, 100.0 * correct / len(cases)))
+                top_k = sess.run(tf.nn.in_top_k(predictions, validation_targets_as_ints, 1))
+                print("Validation test after {0} minibatches: {1:.2f}%"
+                        .format(minibatches_ran, 100.0 * np.sum(top_k) / len(validation_inputs)))
 
     class GANNModule():
         def __init__(self, initial_weight_range, input, dimension, name, activation_function):

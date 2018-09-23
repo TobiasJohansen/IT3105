@@ -17,14 +17,15 @@ class Casemanager():
         separator2 = separator1 + round(len(cases) * validation_fraction)
         
         self.train_cases = cases[:separator1]
-        self.validation_cases = cases[separator1:separator2]
+        
+        validation_cases = cases[separator1:separator2]
+        validation_inputs, validation_targets = map(list, np.array(validation_cases).T)
+        validation_targets_as_ints = [tft.one_hot_to_int(one_hot_vector) for one_hot_vector in validation_targets]
+        self.validation_cases = [validation_inputs, validation_targets, validation_targets_as_ints]
+
         self.test_cases = cases[separator2:]
 
-    def get_minibatch(self, cases, iteration, minibatch_size):
-        nr_of_cases = len(cases)
-        start = iteration * minibatch_size % nr_of_cases
-        end = start + minibatch_size
-        return cases[start:end] + cases[:max(end - nr_of_cases, 0)]
-
-    def get_one_hot_vectors_as_ints(self, one_hot_vectors):
-        return [tft.one_hot_to_int(one_hot_vector) for one_hot_vector in one_hot_vectors]
+    def get_minibatch(self, minibatch_size):
+        inputs, targets = map(list, np.array(self.train_cases[:minibatch_size]).T)
+        np.random.shuffle(self.train_cases)
+        return inputs, targets
