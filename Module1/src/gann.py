@@ -50,7 +50,7 @@ class GANN():
         sess = tf.Session()
         sess.run(tf.global_variables_initializer())
 
-        for i in range(steps):
+        for step_nr in range(1, steps + 1):
             
             # Train
             inputs, targets = self.casemanager.get_minibatch(minibatch_size)
@@ -58,13 +58,12 @@ class GANN():
             sess.run(self.trainer, feeder)
 
             # Consider validation
-            minibatches_ran = i + 1
-            if minibatches_ran % validation_interval == 0:
+            if step_nr % validation_interval == 0:
                 feeder = {self.input: validation_inputs, self.target: validation_targets}
                 predictions = sess.run(self.output, feeder)
                 top_k = sess.run(tf.nn.in_top_k(predictions, validation_targets_as_ints, 1))
                 print("Validation test after {0} minibatches: {1:.2f}%"
-                        .format(minibatches_ran, 100.0 * np.sum(top_k) / len(validation_inputs)))
+                        .format(step_nr, 100.0 * np.sum(top_k) / len(validation_inputs)))
 
     class GANNModule():
         def __init__(self, initial_weight_range, input, dimension, name, activation_function):
