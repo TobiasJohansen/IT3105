@@ -9,12 +9,9 @@ def run(network_dimensions, hidden_activation_function, output_activation_functi
         steps, map_layers, map_dendrograms, display_weights, display_biases, case_fraction=1.0):
     
     casemanager = Casemanager(datasource, case_fraction, validation_fraction, test_fraction)
-
-    network_dimensions.insert(0, casemanager.number_of_features)
-    network_dimensions.append(casemanager.number_of_classes)
-    
-    gann = GANN(network_dimensions, hidden_activation_function, output_activation_function, cost_function, learning_rate, 
-                 initial_weight_range, optimizer, casemanager)
+    gann = GANN(casemanager, network_dimensions, hidden_activation_function, output_activation_function, cost_function, learning_rate, 
+                 initial_weight_range, optimizer)
 
     gann.do_training(steps, minibatch_size, validation_interval)
+    gann.do_testing()
     

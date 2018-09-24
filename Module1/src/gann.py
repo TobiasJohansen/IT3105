@@ -1,15 +1,19 @@
 import numpy as np
 import os
 import tensorflow as tf
+import tools.tflowtools as tft
 import time
 
 # Turn off tensorflow information
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3' 
 
 class GANN():
-    def __init__(self, network_dimensions, hidden_activation_function, output_activation_function, cost_function, learning_rate, 
-                 initial_weight_range, optimizer, casemanager):
+    def __init__(self, casemanager, network_dimensions, hidden_activation_function, output_activation_function, cost_function, learning_rate, 
+                 initial_weight_range, optimizer):
         
+        self.casemanager = casemanager
+        network_dimensions.insert(0, casemanager.number_of_features)
+        network_dimensions.append(casemanager.number_of_classes)
         self.network_dimensions = network_dimensions
         self.hidden_activation_function = hidden_activation_function
         self.output_activation_function = output_activation_function
@@ -17,7 +21,7 @@ class GANN():
         self.learning_rate = learning_rate
         self.initial_weight_range = initial_weight_range
         self.optimizer = optimizer
-        self.casemanager = casemanager
+        
 
         self.build_network()
         self.configure_training()
@@ -40,30 +44,36 @@ class GANN():
         self.optimizer = self.optimizer(self.learning_rate)
         self.trainer = self.optimizer.minimize(self.error)
 
+    def evaluate(self, cases):
+        inputs, targets = cases
+        feeder = {self.input: inputs, self.target: targets}
+        predictions = self.sess.run(self.output, feeder)
+        top_k = self.sess.run(tf.nn.in_top_k(predictions, self.casemanager.one_hot_vectors_to_ints(targets), 1))
+        return 100.0 * np.sum(top_k) / len(inputs)
+
     def do_training(self, steps, minibatch_size, validation_interval):
         
         print("\n== TRAINING ==")        
         
-        # Validation cases
-        validation_inputs, validation_targets, validation_targets_as_ints = self.casemanager.validation_cases
-
-        sess = tf.Session()
-        sess.run(tf.global_variables_initializer())
+        self.sess = tf.Session()
+        self.sess.run(tf.global_variables_initializer())
 
         for step_nr in range(1, steps + 1):
             
             # Train
             inputs, targets = self.casemanager.get_minibatch(minibatch_size)
             feeder = {self.input: inputs, self.target: targets}
-            sess.run(self.trainer, feeder)
+            self.sess.run(self.trainer, feeder)
 
             # Consider validation
             if step_nr % validation_interval == 0:
-                feeder = {self.input: validation_inputs, self.target: validation_targets}
-                predictions = sess.run(self.output, feeder)
-                top_k = sess.run(tf.nn.in_top_k(predictions, validation_targets_as_ints, 1))
-                print("Validation test after {0} minibatches: {1:.2f}%"
-                        .format(step_nr, 100.0 * np.sum(top_k) / len(validation_inputs)))
+                accuracy = self.evaluate(self.casemanager.get_validation_cases())
+                print("Validation test after {0} minibatches: {1:.2f}%".format(step_nr, accuracy))
+
+    def do_testing(self):
+        print("\n== TESTING ==")        
+        print("Train data: {0:.2f}%".format(self.evaluate(self.casemanager.get_train_cases())))
+        print("Test data: {0:.2f}%".format(self.evaluate(self.casemanager.get_test_cases())))
 
     class GANNModule():
         def __init__(self, initial_weight_range, input, dimension, name, activation_function):

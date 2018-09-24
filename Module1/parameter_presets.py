@@ -30,7 +30,7 @@ symmetry = {
     "learning_rate": 0.001,
     "initial_weight_range": [-.1, .1],
     "optimizer": system.optimizers.adam,
-    "datasource": {"function": system.data_sources.symmetry, "parameters": {"vlen": 10, "count": 5}},
+    "datasource": {"function": system.data_sources.symmetry, "parameters": {"vlen": 10, "count": 100}},
     "case_fraction": 1.0,
     "validation_fraction": 0.2,
     "validation_interval": 10,
@@ -45,7 +45,7 @@ symmetry = {
 }
 
 wine = {
-    "network_dimensions": [100, 20],
+    "network_dimensions": [40, 80, 30],
     "hidden_activation_function": system.activation_functions.relu,
     "output_activation_function": system.activation_functions.softmax,
     "cost_function": system.cost_functions.mse,
@@ -59,7 +59,7 @@ wine = {
     "test_fraction": 0.1,
     "minibatch_size": 100,
     "map_batch_size": 0,
-    "steps": 100000,
+    "steps": 10000,
     "map_layers": [],
     "map_dendrograms": [],
     "display_weights": [],
