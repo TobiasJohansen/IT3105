@@ -27,9 +27,6 @@ class Casemanager():
     def get_minibatch(self, minibatch_size):
         return self.get_randomised_subset(self.train_cases, minibatch_size).tolist()
 
-    def one_hot_vectors_to_ints(self, one_hot_vectors):
-        return [tft.one_hot_to_int(one_hot_vector) for one_hot_vector in one_hot_vectors]
-
     def get_train_cases(self): return self.train_cases.tolist()
     def get_validation_cases(self): return self.validation_cases.tolist()
     def get_test_cases(self): return self.test_cases.tolist()

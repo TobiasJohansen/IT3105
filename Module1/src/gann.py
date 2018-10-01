@@ -42,13 +42,13 @@ class GANN():
         self.target = tf.placeholder(tf.float64, shape = (None, self.network_dimensions[-1]), name = "target")
         self.error = self.cost_function(self.target, self.output)
         self.optimizer = self.optimizer(self.learning_rate)
-        self.trainer = self.optimizer.minimize(self.error)
+        self.trainer = self.optimizer.minimize(self.error, name = "backprop")
 
     def evaluate(self, cases):
-        inputs, targets = cases
+        inputs, targets, targets_as_ints = cases
         feeder = {self.input: inputs, self.target: targets}
         predictions = self.sess.run(self.output, feeder)
-        top_k = self.sess.run(tf.nn.in_top_k(predictions, self.casemanager.one_hot_vectors_to_ints(targets), 1))
+        top_k = self.sess.run(tf.nn.in_top_k(predictions, targets_as_ints, 1))
         return 100.0 * np.sum(top_k) / len(inputs)
 
     def do_training(self, steps, minibatch_size, validation_interval):
@@ -61,7 +61,7 @@ class GANN():
         for step_nr in range(1, steps + 1):
             
             # Train
-            inputs, targets = self.casemanager.get_minibatch(minibatch_size)
+            inputs, targets, _ = self.casemanager.get_minibatch(minibatch_size)
             feeder = {self.input: inputs, self.target: targets}
             self.sess.run(self.trainer, feeder)
 
@@ -84,5 +84,3 @@ class GANN():
                                                          size = dimension), 
                                                          name = name + "_biases")
             self.output = activation_function(tf.matmul(input, self.weights) + self.bias, name) 
-
-

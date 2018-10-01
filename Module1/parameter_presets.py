@@ -1,7 +1,7 @@
 import src.system as system
 
 parity = {
-    "network_dimensions": [10, 5],
+    "network_dimensions": [40, 20],
     "hidden_activation_function": system.activation_functions.relu,
     "output_activation_function": system.activation_functions.softmax,
     "cost_function": system.cost_functions.mse,
@@ -10,12 +10,12 @@ parity = {
     "optimizer": system.optimizers.adam,
     "datasource": {"function": system.data_sources.parity, "parameters": {"num_bits": 10}},
     "case_fraction": 1.0,
-    "validation_fraction": 0.2,
-    "validation_interval": 10,
+    "validation_fraction": 0.1,
+    "validation_interval": 100,
     "test_fraction": 0.1,
     "minibatch_size": 50,
     "map_batch_size": 0,
-    "steps": 100000,
+    "steps": 10000,
     "map_layers": [],
     "map_dendrograms": [],
     "display_weights": [],
@@ -23,39 +23,105 @@ parity = {
 }
 
 symmetry = {
-    "network_dimensions": [10, 5],
+    "network_dimensions": [20],
     "hidden_activation_function": system.activation_functions.relu,
     "output_activation_function": system.activation_functions.softmax,
     "cost_function": system.cost_functions.mse,
     "learning_rate": 0.001,
     "initial_weight_range": [-.1, .1],
     "optimizer": system.optimizers.adam,
-    "datasource": {"function": system.data_sources.symmetry, "parameters": {"vlen": 10, "count": 100}},
+    "datasource": {"function": system.data_sources.symmetry, "parameters": {"vlen": 101, "count": 2000}},
     "case_fraction": 1.0,
-    "validation_fraction": 0.2,
-    "validation_interval": 10,
+    "validation_fraction": 0.1,
+    "validation_interval": 100,
     "test_fraction": 0.1,
     "minibatch_size": 50,
     "map_batch_size": 0,
-    "steps": 100000,
+    "steps": 10000,
     "map_layers": [],
     "map_dendrograms": [],
     "display_weights": [],
     "display_biases": []
 }
 
-wine = {
-    "network_dimensions": [40, 80, 30],
+autoencoder = {
+    "network_dimensions": [5],
+    "hidden_activation_function": system.activation_functions.relu,
+    "output_activation_function": system.activation_functions.relu,
+    "cost_function": system.cost_functions.mse,
+    "learning_rate": 0.001,
+    "initial_weight_range": [-.1, .1],
+    "optimizer": system.optimizers.adam,
+    "datasource": {"function": system.data_sources.autoencoder, "parameters": {"len": 32}},
+    "case_fraction": 1.0,
+    "validation_fraction": 0.1,
+    "validation_interval": 100,
+    "test_fraction": 0.1,
+    "minibatch_size": 50,
+    "map_batch_size": 0,
+    "steps": 10000,
+    "map_layers": [],
+    "map_dendrograms": [],
+    "display_weights": [],
+    "display_biases": []
+}
+
+bit_counter = {
+    "network_dimensions": [40],
     "hidden_activation_function": system.activation_functions.relu,
     "output_activation_function": system.activation_functions.softmax,
     "cost_function": system.cost_functions.mse,
     "learning_rate": 0.001,
     "initial_weight_range": [-.1, .1],
     "optimizer": system.optimizers.adam,
-    "datasource": {"function": system.data_sources.wine, "parameters": {}},
+    "datasource": {"function": system.data_sources.bit_counter, "parameters": {"num": 500, "size": 15}},
     "case_fraction": 1.0,
     "validation_fraction": 0.1,
-    "validation_interval": 1000,
+    "validation_interval": 100,
+    "test_fraction": 0.1,
+    "minibatch_size": 50,
+    "map_batch_size": 0,
+    "steps": 10000,
+    "map_layers": [],
+    "map_dendrograms": [],
+    "display_weights": [],
+    "display_biases": []
+}
+
+segment_counter = {
+    "network_dimensions": [80, 80],
+    "hidden_activation_function": system.activation_functions.relu,
+    "output_activation_function": system.activation_functions.softmax,
+    "cost_function": system.cost_functions.mse,
+    "learning_rate": 0.001,
+    "initial_weight_range": [-.1, .1],
+    "optimizer": system.optimizers.adam,
+    "datasource": {"function": system.data_sources.segment_counter, "parameters": {"vectorlen": 25, "count": 1000, "minsegs": 0, "maxsegs": 8}},
+    "case_fraction": 1.0,
+    "validation_fraction": 0.1,
+    "validation_interval": 100,
+    "test_fraction": 0.1,
+    "minibatch_size": 50,
+    "map_batch_size": 0,
+    "steps": 10000,
+    "map_layers": [],
+    "map_dendrograms": [],
+    "display_weights": [],
+    "display_biases": []
+}
+
+mnist = {
+    "network_dimensions": [100, 60],
+    "hidden_activation_function": system.activation_functions.relu,
+    "output_activation_function": system.activation_functions.softmax,
+    "cost_function": system.cost_functions.mse,
+    "learning_rate": 0.002,
+    "initial_weight_range": [-.1, .1],
+    "optimizer": system.optimizers.rms_prop,
+    "datasource": {"function": system.data_sources.mnist, "parameters": {}},
+    "case_fraction": 1.0,
+    "validation_fraction": 0.1,
+    "validation_interval": 100,
     "test_fraction": 0.1,
     "minibatch_size": 100,
     "map_batch_size": 0,
@@ -66,18 +132,40 @@ wine = {
     "display_biases": []
 }
 
-mnist = {
-    "network_dimensions": [100, 80, 60, 40, 20, 10],
+wine_quality = {
+    "network_dimensions": [250, 175, 100, 50],
+    "hidden_activation_function": system.activation_functions.relu,
+    "output_activation_function": system.activation_functions.softmax,
+    "cost_function": system.cost_functions.mse,
+    "learning_rate": 0.0015,
+    "initial_weight_range": [-.1, .1],
+    "optimizer": system.optimizers.adam,
+    "datasource": {"function": system.data_sources.wine_quality, "parameters": {}},
+    "case_fraction": 1.0,
+    "validation_fraction": 0.1,
+    "validation_interval": 100,
+    "test_fraction": 0.1,
+    "minibatch_size": 100,
+    "map_batch_size": 0,
+    "steps": 10000,
+    "map_layers": [],
+    "map_dendrograms": [],
+    "display_weights": [],
+    "display_biases": []
+}
+
+glass = {
+    "network_dimensions": [80, 80],
     "hidden_activation_function": system.activation_functions.relu,
     "output_activation_function": system.activation_functions.softmax,
     "cost_function": system.cost_functions.mse,
     "learning_rate": 0.001,
     "initial_weight_range": [-.1, .1],
     "optimizer": system.optimizers.adam,
-    "datasource": {"function": system.data_sources.mnist, "parameters": {}},
-    "case_fraction": 0.1,
+    "datasource": {"function": system.data_sources.glass, "parameters": {}},
+    "case_fraction": 1.0,
     "validation_fraction": 0.1,
-    "validation_interval": 1000,
+    "validation_interval": 100,
     "test_fraction": 0.1,
     "minibatch_size": 50,
     "map_batch_size": 0,
@@ -87,3 +175,4 @@ mnist = {
     "display_weights": [],
     "display_biases": []
 }
+
