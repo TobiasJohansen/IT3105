@@ -8,10 +8,11 @@ symmetry = lambda **param : to_np(restructure(set_both_targets(tft.gen_symvect_d
 autoencoder = lambda **param : to_np(restructure(set_int_targets(tft.gen_all_one_hot_cases(**param))))
 bit_counter = lambda **param : to_np(restructure(set_int_targets(tft.gen_vector_count_cases(**param))))
 segment_counter = lambda **param : to_np(restructure(set_int_targets(tft.gen_segmented_vector_cases(**param))))
+mnist = lambda : to_np(normalize(restructure(set_both_targets(mb.load_all_flat_cases(dir="data/mnist/", unify=True))), 255))
 wine_quality = lambda : to_np(normalize(restructure(set_both_targets(read_csv("data/winequality_red.txt", ";")))))
 glass = lambda : to_np(normalize(restructure(set_both_targets(read_csv("data/glass.txt", ",")))))
 yeast = lambda : to_np(normalize(restructure(set_both_targets(read_csv("data/yeast.txt", ",")))))
-mnist = lambda : to_np(normalize(restructure(set_both_targets(mb.load_all_flat_cases(dir="data/mnist/", unify=True))), 255))
+poker_hand = lambda : to_np(normalize(restructure(set_both_targets(read_csv("data/poker_hand.txt", ",")))))
 
 def to_np(cases):
     return np.array(cases)

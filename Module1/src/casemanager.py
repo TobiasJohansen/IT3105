@@ -2,6 +2,7 @@ import random
 import tools.tflowtools as tft
 
 class Casemanager():
+    
     def __init__(self, datasource, case_fraction, validation_fraction, test_fraction):
         
         all_cases = datasource["function"](**datasource["parameters"])

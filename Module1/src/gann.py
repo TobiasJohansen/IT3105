@@ -8,6 +8,7 @@ import time
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3' 
 
 class GANN():
+    
     def __init__(self, casemanager, network_dimensions, hidden_activation_function, output_activation_function, cost_function, learning_rate, 
                  initial_weight_range, optimizer):
         
@@ -76,9 +77,17 @@ class GANN():
         print("Test data: {0:.2f}%".format(self.evaluate(self.casemanager.get_test_cases())))
 
     class GANNModule():
+
         def __init__(self, initial_weight_range, input, dimension, name, activation_function):
+            
+            input_size = input.get_shape().as_list()[1]
+            
+            if initial_weight_range == "scaled":
+                v = 1 / np.sqrt((input_size)) 
+                initial_weight_range = [-v, v]
+                
             self.weights = tf.Variable(np.random.uniform(initial_weight_range[0], initial_weight_range[1], 
-                                                         size = (input.get_shape().as_list()[1], dimension)), 
+                                                         size = (input_size, dimension)), 
                                                          name = name + "_weights")
             self.bias = tf.Variable(np.random.uniform(initial_weight_range[0], initial_weight_range[1], 
                                                          size = dimension), 
