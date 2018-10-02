@@ -119,7 +119,7 @@ mnist = {
     "initial_weight_range": [-.1, .1],
     "optimizer": system.optimizers.rms_prop,
     "datasource": {"function": system.data_sources.mnist, "parameters": {}},
-    "case_fraction": 1.0,
+    "case_fraction": 0.1,
     "validation_fraction": 0.1,
     "validation_interval": 100,
     "test_fraction": 0.1,

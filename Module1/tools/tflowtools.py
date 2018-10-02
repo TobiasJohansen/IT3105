@@ -395,8 +395,6 @@ def hinton_plot(matrix, maxval=None, maxsize=1, fig=None,trans=True,scale=True, 
         blob = PLT.Rectangle(bottom_left, size, size, facecolor=color, edgecolor=colors[3])
         axes.add_patch(blob)
     axes.autoscale_view()
-    PLT.draw()
-    PLT.pause(.001)
 
 # This graphically displays a matrix with color codes for positive, negative, small positive and small negative,
 # with the latter 2 defined by the 'cutoff' argument.  The transpose (trans) arg defaults to
@@ -465,4 +463,3 @@ def dendrogram(features,labels,metric='euclidean',mode='average',ax=None,title='
     PLT.tight_layout()
     ax.set_title(title)
     ax.set_ylabel(metric + ' distance')
-    PLT.show()
