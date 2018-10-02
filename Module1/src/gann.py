@@ -146,7 +146,7 @@ class GANN():
     def plot_biases(self, display_biases, activations):
         if len(activations) > 0:
             for i, activation in enumerate(activations):
-                tft.display_matrix(np.array([activation]), title="Biases, Layer - " + str(display_biases[i]))
+                tft.display_matrix(np.array([activation]).T, title="Biases, Layer - " + str(display_biases[i]))
 
     def visualize(self, error_log, map_batch_size, map_layers, map_dendrograms, display_weights, display_biases):
         
