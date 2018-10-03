@@ -17,10 +17,10 @@ demo = {
     "minibatch_size": 100,
     "map_batch_size": 10,
     "steps": 1000,
-    "map_layers": [2],
-    "map_dendrograms": [2],
-    "display_weights": [2],
-    "display_biases": [2]
+    "map_layers": [0,1,2],
+    "map_dendrograms": [0,1,2],
+    "display_weights": [1,2],
+    "display_biases": [1,2]
 }
 
 system.run(**demo)
