@@ -5,6 +5,11 @@ turns_options = {
     2: [2, 1]
 }
 
+next_player = {
+    1: 2,
+    2: 1
+}
+
 def get_starting_player(p):
     if p == "Mix":
         return turns_options[random.randint(1,2)]
