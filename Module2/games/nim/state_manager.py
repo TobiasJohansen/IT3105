@@ -1,22 +1,19 @@
-from games.nim.game import Game
-import games.nim.utils as utils
+from games.nim.utils import next_player
 
 class StateManager():
 
-    def __init__(self, starting_player, total_stones, max_selection):
-        self.starting_player = starting_player
-        self.total_stones = total_stones
-        self.max_selection = max_selection
+    def __init__(self, game):
+        self.game = game
 
     def gen_initial_state(self):
-        return self.State(self.starting_player, self.total_stones)
+        return self.State(self.game.current_player, self.game.remaining_stones)
     
     def gen_child_states(self, state):
         child_states = []
-        next_player = utils.next_player[state.current_player]
-        for nr_of_selected_stones in range(1, min(state.remaining_stones, self.max_selection) + 1):
-            remaining_stones = state.stones - nr_of_selected_stones
-            child_states.append(self.State(next_player, remaining_stones))
+        current_player = next_player[state.current_player]
+        for nr_of_selected_stones in range(1, min(state.remaining_stones, self.game.max_selection) + 1):
+            remaining_stones = state.remaining_stones - nr_of_selected_stones
+            child_states.append((self.State(current_player, remaining_stones), nr_of_selected_stones))
         return child_states
 
     def is_winning_state(self, state):
