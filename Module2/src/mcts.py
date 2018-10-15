@@ -2,21 +2,26 @@ import numpy as np
 import random 
 
 class MCTS():
-    def __init__(self, m, state_manager, simulator):
+    def __init__(self, player_number, m, batch_size, state_manager, verbosity_level=1):
+        self.player_number = player_number
         self.m = m
+        self.batch_size = batch_size
         self.state_manager = state_manager
-        self.simulator = simulator
+        self.state_manager.verbosity_level = verbosity_level
+        self.verbosity_level = verbosity_level
             
     def episode(self):
         self.root = self.Node(self.state_manager.gen_initial_state(), None, None)
         self.root.children = []
         for i in range(1, self.m + 1):
-            print("\nM - {0}:".format(i))
+            if self.verbosity_level > 0:
+                print("\nM - {0}:".format(i))
             node = self.tree_search()
             leaf = node if node.state.is_terminal() else self.node_expansion(node)
             score = self.leaf_evaluation(leaf)
             self.backpropagation(leaf, score)
-        print()
+        if self.verbosity_level > 0:
+            print()
         return self.root.children[np.argmax([child.q for child in self.root.children])].action
 
     # Returns a non/partially expanded node
@@ -24,7 +29,7 @@ class MCTS():
         node = self.root
         children = node.children
         while children and all(child.visits > 0 for child in children):
-            if node.state.current_player == 1:
+            if node.state.current_player == self.player_number:
                 node = children[np.argmax([child.q + child.u for child in children])]
             else:
                 node = children[np.argmin([child.q - child.u for child in children])]
@@ -44,13 +49,14 @@ class MCTS():
             return random.choice(node.children)
 
     def leaf_evaluation(self, leaf):
-        return self.simulator.simulate(leaf.state)
+        if self.verbosity_level > 0:
+            print("\nEvaluation of node:")
+            print(leaf.to_string())
+        return self.state_manager.simulate_state(leaf.state, self.batch_size, self.verbosity_level)
 
     def backpropagation(self, leaf, score):
-        games_won = score[1]
-        games_played = 0
-        for _, wins in score.items():
-            games_played += wins
+        games_won = score[self.player_number]
+        games_played = self.batch_size
         leaf.wins += games_won
         leaf.visits += games_played  
         node = leaf
@@ -74,3 +80,11 @@ class MCTS():
             self.children = []
             self.wins = 0
             self.visits = 0
+        
+        def to_string(self):
+            depth = 0
+            parent = self.parent
+            while parent:
+                depth += 1
+                parent = parent.parent
+            return "Tree depth: {0}\nPrevious action: {1}\n".format(depth, self.action) + self.state.to_string()
