@@ -13,13 +13,16 @@ class StateManager():
         current_player = next_player[state.current_player]
         for nr_of_selected_stones in range(1, min(state.remaining_stones, self.game.max_selection) + 1):
             remaining_stones = state.remaining_stones - nr_of_selected_stones
-            child_states.append((self.State(current_player, remaining_stones), nr_of_selected_stones))
+            child_state = self.State(current_player, remaining_stones)
+            child_state.winning_player = state.current_player if child_state.is_terminal() else None
+            child_states.append((child_state, nr_of_selected_stones))
         return child_states
 
-    def is_winning_state(self, state):
-        return True if state.n == 0 else False
-
     class State():
+        
         def __init__(self, current_player, remaining_stones):
             self.current_player = current_player
             self.remaining_stones = remaining_stones
+
+        def is_terminal(self):
+            return not self.remaining_stones

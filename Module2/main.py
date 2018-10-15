@@ -6,10 +6,16 @@ from mcts import MCTS
 options = {
     "starting_player": 1,
     "total_stones": 10,
-    "max_selection": 3
+    "max_selection": 3,
+    "verbose": True
 }
-game = Game(**options)
-mcts = MCTS(10, StateManager(game), Simulator(1, game, verbose=True))
 
-mcts.episode()
+print("\n=== NIM - MTCS ===\n")
+game = Game(**options)
+mcts = MCTS(4, StateManager(game), Simulator(game, 2, True))
+
+while not game.over:
+    game.select_stones(mcts.episode())
+    if not game.over:
+        game.select_stones(int(input("Select stones: ")))
 

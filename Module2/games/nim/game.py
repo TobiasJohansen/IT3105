@@ -13,7 +13,7 @@ class Game():
         if self.verbose:
             print("Created a new game of NIM with N = {0} and K = {1}. Player {2} starts!"
                 .format(total_stones, max_selection, starting_player))
-    
+
     def select_stones(self, nr_of_stones):        
         if self.is_active() and self.correct_input(nr_of_stones):
             self.remove_stones(nr_of_stones)
