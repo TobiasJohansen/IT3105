@@ -1,4 +1,4 @@
-from games.nim.state_manager import StateManager
+from games.nim.statemanager import StateManager
 from games.nim.game import Game
 from src.mcts import MCTS
 
