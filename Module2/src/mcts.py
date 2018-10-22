@@ -1,28 +1,36 @@
 import numpy as np
-import random 
+import random
 
 class MCTS():
-    def __init__(self, player_number, m, batch_size, state_manager, verbosity_level=1):
+    def __init__(self, player_number, m, batch_size, state_manager):
         self.player_number = player_number
         self.m = m
         self.batch_size = batch_size
         self.state_manager = state_manager
-        self.state_manager.verbosity_level = verbosity_level
-        self.verbosity_level = verbosity_level
             
     def episode(self):
         self.root = self.Node(self.state_manager.gen_initial_state(), None, None)
-        self.root.children = []
-        for i in range(1, self.m + 1):
-            if self.verbosity_level > 0:
-                print("\nM - {0}:".format(i))
+        self.root.children = []  
+        for _ in range(self.m):
             node = self.tree_search()
-            leaf = node if node.state.is_terminal() else self.node_expansion(node)
-            score = self.leaf_evaluation(leaf)
-            self.backpropagation(leaf, score)
-        if self.verbosity_level > 0:
-            print()
-        return self.root.children[np.argmax([child.q for child in self.root.children])].action
+            leaf = node if self.state_manager.is_state_terminal(node.state) else self.node_expansion(node)
+            wins = self.leaf_evaluation(leaf)
+            self.backpropagation(leaf, wins)
+            #print("\nM {0}/{1}".format(i, self.m))
+            #print("\nRollout results: {0}".format(wins))
+        #self.tree_printer(self.root, "")
+        #print("\nBest action is:", self.root.children[np.argmax([child.wins / child.visits for child in self.root.children])].action)
+        #exit()
+            #input()
+        return self.root.children[np.argmax([child.wins / child.visits for child in self.root.children])].action
+
+    def tree_printer(self, node, tab):
+        for child in node.children:
+            print("\n{0}Action: {1} ==> {2}"
+                .format(tab, child.action, self.state_manager.to_string(child.state)))
+            print("{0}{1}/{2}".format(tab, child.wins, child.visits))
+            #if child.children:
+            #    self.tree_printer(child, tab+str("\t"))
 
     # Returns a non/partially expanded node
     def tree_search(self):
@@ -30,11 +38,17 @@ class MCTS():
         children = node.children
         while children and all(child.visits > 0 for child in children):
             if node.state.current_player == self.player_number:
-                node = children[np.argmax([child.q + child.u for child in children])]
+                node = self.max_UCT(children)
             else:
-                node = children[np.argmin([child.q - child.u for child in children])]
+                node = self.min_UCT(children)
             children = node.children
         return node
+    
+    def max_UCT(self, children):
+        return children[np.argmax([child.wins / child.visits + np.sqrt(2) * np.sqrt(np.log(child.parent.visits) / child.visits) for child in children])]
+
+    def min_UCT(self, children):
+        return children[np.argmin([child.wins / child.visits - np.sqrt(2) * np.sqrt(np.log(child.parent.visits) / child.visits) for child in children])]
 
     # Returns an unvisited child of a non/partially expanded node 
     def node_expansion(self, node):
@@ -49,25 +63,19 @@ class MCTS():
             return random.choice(node.children)
 
     def leaf_evaluation(self, leaf):
-        if self.verbosity_level > 0:
-            print("\nEvaluation of node:")
-            print(leaf.to_string())
-        return self.state_manager.simulate_state(leaf.state, self.batch_size, self.verbosity_level)
+        return self.state_manager.rollout_state(leaf.state, self.batch_size)
 
-    def backpropagation(self, leaf, score):
-        games_won = score[self.player_number]
-        games_played = self.batch_size
-        leaf.wins += games_won
-        leaf.visits += games_played  
-        node = leaf
-        parent = leaf.parent
-        while parent:     
-            parent.wins += games_won
-            parent.visits += games_played      
-            node.q = node.wins / node.visits 
-            node.u = 1 * np.sqrt(np.log(parent.visits) / node.visits)
+    def backpropagation(self, node, wins):
+        parent = node.parent
+        while parent:
+            previous_player = parent.state.current_player
+            player_wins = wins[previous_player]
+            perspective_score = player_wins if previous_player == self.player_number else - player_wins 
+            node.wins += perspective_score
+            node.visits += self.batch_size
             node = parent
-            parent = parent.parent     
+            parent = parent.parent
+        node.visits += self.batch_size
 
     class Node():
         
@@ -75,16 +83,6 @@ class MCTS():
             self.state = state
             self.action = action
             self.parent = parent
-            self.q = 0
-            self.u = 0
             self.children = []
             self.wins = 0
             self.visits = 0
-        
-        def to_string(self):
-            depth = 0
-            parent = self.parent
-            while parent:
-                depth += 1
-                parent = parent.parent
-            return "Tree depth: {0}\nPrevious action: {1}\n".format(depth, self.action) + self.state.to_string()
