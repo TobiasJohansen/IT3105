@@ -1,6 +1,7 @@
 class State():
-        
-        def __init__(self, current_player, remaining_stones, winning_player=None):
-            self.current_player = current_player
-            self.remaining_stones = remaining_stones
-            self.winning_player = winning_player
+    def __init__(self, previous_player_idx, remaining_stones):
+        self.previous_player_idx = previous_player_idx
+        self.remaining_stones = remaining_stones
+
+    def __eq__(self, other): 
+        return self.__dict__ == other.__dict__
