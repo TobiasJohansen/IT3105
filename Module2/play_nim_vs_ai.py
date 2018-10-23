@@ -18,6 +18,6 @@ while play:
         inpt = input("Do you want to play another game of NIM? (y/n): ")
         if inpt == "y":
             input_given = True
-        if inpt == "n": 
+        elif inpt == "n": 
             input_given = True
             play = False
