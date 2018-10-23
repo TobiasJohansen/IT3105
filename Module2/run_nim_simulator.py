@@ -1,5 +1,12 @@
 from games.nim.simulator import Simulator
 
+batch_parameters = {
+    "g": 1,
+    "p": "Mix",
+    "m": 1,
+    "n": 10,
+    "k": 2
+}
+
 sim = Simulator(player_names=["AI-bert", "AI-na"])
-score = sim.simulate_batch(g=10, p=0, m=2000, n=15, k=3, rollout_batch_size=1, verbose=True)
-print("\nGames won:\n{0}".format(score))
+sim.simulate_batch(**batch_parameters)

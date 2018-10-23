@@ -4,7 +4,7 @@ class Game():
 
     over = False
 
-    def __init__(self, players, starting_player_idx, total_nr_of_stones, max_selection, verbose=True):
+    def __init__(self, players, starting_player_idx, total_nr_of_stones, max_selection, verbose=True):        
         
         self.players = players
         self.current_player_idx = starting_player_idx
@@ -16,9 +16,11 @@ class Game():
             print("\nCreated a new game of NIM with N = {0} and K = {1}. [P{2} - {3}] starts!"
                 .format(total_nr_of_stones, max_selection, starting_player_idx + 1, players[starting_player_idx].name))
     
+    # Returns the current player as a player object  
     def current_player(self):
         return self.players[self.current_player_idx]
     
+    # Removes stones, checks if game is won and updates current/previous player
     def select_stones(self, nr_of_stones):     
         self.remove_stones(nr_of_stones)
         self.check_if_won()  
@@ -44,6 +46,7 @@ class Game():
             return self.current_player_idx
         return (current_player + 1) % len(self.players)
 
+    # Checks if input given is correct or not
     def correct_input(self, inpt):
         try:
             inpt = int(inpt)
@@ -55,6 +58,7 @@ class Game():
             print("Select a number in the range [1 - {0}]".format(self.max_selection))
             return None
     
+    # Prompts user for input while given input is incorrect
     def user_input(self):
         inpt = input("[P{0} - {1}] Select stones: ".format(self.current_player_idx + 1, self.players[self.current_player_idx].name))
         if inpt == "exit" : exit()
