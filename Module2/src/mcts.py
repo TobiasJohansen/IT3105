@@ -27,9 +27,9 @@ class MCTS():
             self.backpropagation(state_manager, leaf, results)
             
             # Used to print tree each m, continuing after user presses enter
-            #print("\n{0}/{1}".format(i+1, self.m))
-            #self.tree_printer(state_manager, self.root.children, "")
-            #input()
+            # print("\n{0}/{1}".format(i+1, self.m))
+            # self.tree_printer(state_manager, self.root.children, "")
+            # input()
 
         # Find the child node with the highest valued state
         child_scores = []
@@ -96,7 +96,7 @@ class MCTS():
     def tree_printer(self, state_manager, children, tab):
         if children:
             for child in children:
-                print("{0}State: Previous Player Index: {1} - Remaining Stones: {2}"
+                print("\n{0}State: Previous Player Index: {1} - Remaining Stones: {2}"
                     .format(tab, child.state.previous_player_idx, child.state.remaining_stones))
                 _, parent_visits = self.wins_visits[self.get_state_key(state_manager, child.parent)]
                 wins, visits =  self.wins_visits[self.get_state_key(state_manager, child)]
@@ -105,6 +105,8 @@ class MCTS():
                 if visits > 0:
                     q = wins/visits
                     uct = q + np.sqrt(2 * np.log(parent_visits) / visits)
+                print("{0}Wins: {1}".format(tab, wins))
+                print("{0}Visits: {1}".format(tab, visits))
                 print("{0}Q(s) - Value: {1}".format(tab, q))
                 print("{0}UCT(s) - Value: {1}".format(tab, uct))
                 self.tree_printer(state_manager, child.children, tab + str("\t"))

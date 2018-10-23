@@ -15,7 +15,7 @@ class Simulator():
 
         # Arrays to keep count of number of games started / won
         starting_player_idx_count = np.zeros(len(self.player_names), dtype=int) 
-        score = np.zeros(len(self.player_names), dtype=int)
+        results = np.zeros(len(self.player_names), dtype=int)
         
         print("\nSimulating games:\n")
         for i in range(1, g + 1):
@@ -39,12 +39,16 @@ class Simulator():
                 # Request action from current player and execute it
                 game.select_stones(game.current_player().take_turn(game, state_manager))
 
-            # Update score
-            score[game.winning_player_idx] += 1
+            # Update results
+            results[game.winning_player_idx] += 1
 
         # Print results
-        print("\nGames started:\n{0}".format([(self.player_names[i], starting_player_idx_count[i]) for i in range(len(starting_player_idx_count))]))
-        print("\nGames won:\n{0}".format([(self.player_names[i], score[i]) for i in range(len(score))])) 
+        print("\nGames started:")
+        for i in range(len(starting_player_idx_count)):
+            print("[P{0} - {1}] started {2} of {3} games.".format(i, self.player_names[i], starting_player_idx_count[i], g))
+        print("\nGames won:")
+        for i in range(len(results)):
+            print("[P{0} - {1}] won {2} of {3} games. ({4}%)".format(i, self.player_names[i], results[i], g, 100.0*results[i]/g))  
     
     def check_input(self, g, p, m, n, k, rollout_batch_size=1, verbose=False):
         if not (type(g) == int and 1 <= g):

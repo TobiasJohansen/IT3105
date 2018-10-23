@@ -1,11 +1,12 @@
 from games.nim.simulator import Simulator
 
 batch_parameters = {
-    "g": 1,
-    "p": "Mix",
-    "m": 1,
+    "g": 2,
+    "p": 0,
+    "m": 80,
     "n": 10,
-    "k": 2
+    "k": 3,
+    "verbose": True
 }
 
 sim = Simulator(player_names=["AI-bert", "AI-na"])
