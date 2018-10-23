@@ -7,7 +7,7 @@ play = True
 while play:
     brain = MCTS(m=1000, rollout_batch_size=100)
     players = [Player("Tobias"), Player("AI-bert", brain=brain)]
-    game = Game(players, 0, 15, 3)
+    game = Game(players, starting_player_idx=0, total_nr_of_stones=15, max_selection=3)
     state_manager = StateManager(game)
     while not game.over:
         brain.update(game.state)
