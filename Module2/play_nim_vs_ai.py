@@ -1,9 +1,6 @@
 from games.nim.game import Game
-from games.nim.state import State
 from games.nim.statemanager import StateManager
 from games.player import Player
-import numpy as np
-import random
 from src.mcts import MCTS
 
 play = True
