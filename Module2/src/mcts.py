@@ -2,9 +2,9 @@ import numpy as np
 import random
 
 class MCTS():
-    def __init__(self, m, batch_size=1):
+    def __init__(self, m, rollout_batch_size=1):
         self.m = m
-        self.batch_size = batch_size
+        self.rollout_batch_size = rollout_batch_size
         self.root = None
             
     def update(self, state):
@@ -12,8 +12,9 @@ class MCTS():
             for child in self.root.children:
                 if child.state == state:
                     self.root = child
-        else:
-            self.root = self.Node(state, None, None)
+                    self.root.parent = None
+                    return
+        self.root = self.Node(state, None, None)
     
     def get_action(self, state_manager):
         for _ in range(self.m):
@@ -21,7 +22,7 @@ class MCTS():
             leaf = node if state_manager.is_state_terminal(node.state) else self.node_expansion(state_manager, node)
             wins = self.leaf_evaluation(state_manager, leaf)
             self.backpropagation(leaf, wins)
-        return self.root.children[np.argmax([child.wins / child.visits for child in self.root.children])].action
+        return self.root.children[np.argmax([0 if child.visits == 0 else child.wins / child.visits for child in self.root.children])].action
 
     def printer(self, children, tab):
         if children:
@@ -54,14 +55,14 @@ class MCTS():
             return random.choice(node.children)
 
     def leaf_evaluation(self, state_manager, leaf):
-        return state_manager.rollout_state(leaf.state, self.batch_size)
+        return state_manager.rollout_state(leaf.state, self.rollout_batch_size)
 
     def backpropagation(self, node, wins):
         while node.parent:
             node.wins += wins[node.state.previous_player_idx] 
-            node.visits += self.batch_size
+            node.visits += self.rollout_batch_size
             node = node.parent
-        node.visits += self.batch_size
+        node.visits += self.rollout_batch_size
 
     class Node():
         

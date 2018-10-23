@@ -4,7 +4,7 @@ class Game():
 
     over = False
 
-    def __init__(self, players, starting_player_idx, total_nr_of_stones, max_selection, verbose=False):
+    def __init__(self, players, starting_player_idx, total_nr_of_stones, max_selection, verbose=True):
         
         self.players = players
         self.current_player_idx = starting_player_idx
@@ -34,10 +34,10 @@ class Game():
     
     def check_if_won(self):
         if self.state.remaining_stones == 0:
-            self.state.winning_player = self.current_player_idx
+            self.winning_player_idx = self.current_player_idx
             self.over = True
             if self.verbose:
-                print("[P{0} - {1}] wins!".format(self.current_player_idx + 1, self.players[self.current_player_idx].name))
+                print("[P{0} - {1}] wins!\n".format(self.current_player_idx + 1, self.players[self.current_player_idx].name))
 
     def next_player_idx(self, current_player):
         if current_player == None:
