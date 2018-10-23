@@ -40,7 +40,7 @@ class MCTS():
         return node
     
     def max_UCT(self, children):
-        return children[np.argmax([child.wins / child.visits + np.sqrt(2) * np.sqrt(np.log(child.parent.visits) / child.visits) for child in children])]
+        return children[np.argmax([child.wins / child.visits + np.sqrt(2 * np.log(child.parent.visits) / child.visits) for child in children])]
 
     # Returns an unvisited child of a non/partially expanded node 
     def node_expansion(self, state_manager, node):
