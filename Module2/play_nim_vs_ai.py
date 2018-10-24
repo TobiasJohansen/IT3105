@@ -9,7 +9,7 @@ while play:
     # Create the brain of the MCTS AI(s), the list of Players, set up the Game and initialize the StateManager
     brain = MCTS(m=100, rollout_batch_size=1)
     players = [Player("Tobias"), Player("AI-bert", brain=brain)]
-    game = Game(players, starting_player_idx=1, total_nr_of_stones=10, max_selection=3)
+    game = Game(players, starting_player_idx=0, total_nr_of_stones=10, max_selection=3)
     state_manager = StateManager(game)
     
     # Play until game is over

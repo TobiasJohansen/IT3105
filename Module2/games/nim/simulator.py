@@ -35,7 +35,7 @@ class Simulator():
             # Play until game is over
             while not game.over:
                 # Update the internal state of the AI's brain
-                brain.update(game.state)
+                brain.update(state_manager, game.state)
                 # Request action from current player and execute it
                 game.select_stones(game.current_player().take_turn(game, state_manager))
 
