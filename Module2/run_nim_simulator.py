@@ -3,8 +3,8 @@ from games.nim.simulator import Simulator
 batch_parameters = {
     "g": 100,
     "p": 0,
-    "m": 50,
-    "n": 15,
+    "m": 25,
+    "n": 10,
     "k": 3,
     "verbose": False
 }

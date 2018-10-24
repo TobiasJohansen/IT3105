@@ -25,19 +25,15 @@ class MCTS():
     # Returns the action MCTS decides is the best action in the current root state
     def get_action(self, state_manager):
         for i in range(self.m):  
-            # Select best node until node has no children
-            node = self.tree_search(state_manager, self.root)
-            # Skip to rollout if state never visited 
-            if self.get_visits(state_manager, node.state):
-                # Expand node and add child nodes
-                self.node_expansion(state_manager, node)
-                # Repeat if all states of the added child nodes has been visited before
-                while node.children and all(self.get_visits(state_manager, child.state) > 0 for child in node.children):
-                    node = self.tree_search(state_manager, node)
+            node = self.root
+            # Repeat if all states of the added child nodes has been visited before
+            while node.children and all(self.get_visits(state_manager, child.state) > 0 for child in node.children):
+                node = self.tree_search(state_manager, node)
+                # Expand if state of node has been visited before
+                if self.get_visits(state_manager, node.state) > 0:
                     self.node_expansion(state_manager, node)   
-                # If state of node is not terminal, perform one last tree search to select node with an unvisited state
-                if not state_manager.is_state_terminal(node.state):
-                    node = self.tree_search(state_manager, node)         
+            # Perform one last tree search to select node with an unvisited state
+            node = self.tree_search(state_manager, node)         
             # Evaluate that state
             results = self.leaf_evaluation(state_manager, node)
             # Update states
