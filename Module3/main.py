@@ -34,5 +34,5 @@ test_params = {
     "g": 1000
 }
 
-#rl_algoritm.train_models(**test_params)
-topp.play_tournament(**test_params)
+rl_algoritm.train_models(**best_params)
+#topp.play_tournament(**best_params)
