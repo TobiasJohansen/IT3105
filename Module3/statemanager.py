@@ -13,6 +13,7 @@ class Statemanager():
             state = self.state
         return True if state.winner else False
 
+    # Generate a random legal child
     def gen_random_child(self, state=None):
         if not state:
             state = self.state
@@ -21,6 +22,7 @@ class Statemanager():
             child = self.gen_child(random.choice(range(len(state.board))), state)
         return child
     
+    # Generates the child which is a result of performing action a on state
     def gen_child(self, i, state=None):
         if not state:
             state = self.state
@@ -34,6 +36,7 @@ class Statemanager():
         else: 
             return None
     
+    # Generates all legal children
     def gen_children(self, state=None):
         if not state:
             state = self.state
@@ -46,22 +49,35 @@ class Statemanager():
                 children.append(child)
         return children
 
+    # Performs a search from the upper part of the board to the lower part of the board to
+    # find a winner returns None if game is not over yet
     def winner(self, board=None):
         if not board:
             board = self.state.board
         n = int(np.sqrt(len(board)))
+        # Check win for both players
         for player in [1,2]:
+            # Lists containing spaces to visit and spaces that have been visited
             explore = []
             explored = []
+            # The indexer helps select the first spaces to be examined based on the player
+            # If the player is 1, it selects the spaces on the upper left side /
+            # If the player is 2, it selects the spaces on the upper right side \
             indexer = (lambda i, n : i*n) if player == 1 else (lambda i, n : i)
             for i in range(n):
                 index = indexer(i,n)
                 if board[index] == player:
                     explore.append([index // n, index % n]) 
+            # While there still are spaces to explore:
             while explore:
+                # Remove the space from explore and add it to explored
                 index = explore.pop()
                 explored.append(index)
+                # Find all neighbors
                 neighbor_coordinates = [np.array(index) + neighbor for neighbor in self.neighbors]
+                # Check all if any neighbors have been selected by player, hasn't been explored
+                # and exists. If so, check if they are connected to the lower part of the board, 
+                # winning the player the game. If not, its simply added to the list of spaces to explore.
                 for neighbor_coordinate in neighbor_coordinates:
                     x, y = neighbor_coordinate
                     if 0 <= x < n and 0 <= y < n and board[x*n+y] == player and [x, y] not in explored:
@@ -70,6 +86,7 @@ class Statemanager():
                         explore.append([x,y])
         return None
 
+    # Returns a binarized state and a masking for the legal moves 
     def gen_case(self, state=None):
         if not state:
             state = self.state

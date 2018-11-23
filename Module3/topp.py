@@ -7,16 +7,27 @@ def play(player_1, player_2, hex_n, display_games, g):
     statemanager = Statemanager()
     players = [player_1, player_2]
     score = [0,0]
+    # Play all g games
     for i in range(1,g+1):
+        # Display info about game if it is in display_games
         if i in display_games:
-            print("{0} vs. {1}: Round {2}:".format(player_1[0], player_2[0], i))
+            print("{0} vs. {1}: Game {2}:".format(player_1[0], player_2[0], i))
+        # Initiate the game state
         statemanager.init_state(hex_n, random.choice([1,2]))
+        # Play until game is over
         while not statemanager.final_state():
+            # Player is current players corresponding ANET 
             player = players[statemanager.state.player-1]
+            # Binarized state and mask is produces to prepare state for being
+            # forwarded through ANET
             inputs, mask = statemanager.gen_case()
+            # The distribution d is retrieved from ANET
             d = player[1]([inputs],[mask]).detach().numpy().squeeze()
+            # The performed action is selected based on the probability distribution d
             board_space = np.random.choice(range(hex_n**2), p=d)
+            # The state of statemanager is updated to the new state
             statemanager.state = statemanager.gen_child(board_space)
+            # Display state if game is in display_games
             if i in display_games:
                 statemanager.print_state()
         score[statemanager.state.winner-1] += 1

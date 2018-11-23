@@ -5,6 +5,7 @@ import torch.nn.functional as f
 import torch.optim as optim
 
 class ANet(nn.Module):
+    # Build all layers and configure learning
     def __init__(self, learning_rate, layer_sizes, hidden_activation_function, optimizer):
         super(ANet, self).__init__()
         layer_sizes = [[layer_sizes[i], layer_sizes[i+1]] for i in range(len(layer_sizes)-1)]
@@ -17,10 +18,13 @@ class ANet(nn.Module):
         self.criterion = nn.MSELoss()
         self.optimizer = optimizer(self.parameters(), lr=learning_rate)
 
+    # Forwarding inputs through the network and masking it (removing illegal moves),
+    # and normalizing it.
     def forward(self, inputs, masks):
         output_tensor = self.layers(torch.FloatTensor(inputs))
         return f.normalize(output_tensor * torch.FloatTensor(masks), p=1, dim=1)
 
+    # Select random cases from RBUF and train on them (using one epoch per training)
     def do_training(self, rbuf, batch_size=128):
         self.train()
         inputs = []
@@ -38,7 +42,6 @@ class ANet(nn.Module):
         self.optimizer.step()
         self.eval()
         
+    # Save model
     def save(self, path):
         torch.save(self, path)
-
-# After result is produced, set all non available moves to 0, then normalize the rest.
