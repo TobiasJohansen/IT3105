@@ -18,7 +18,8 @@ def gen_train_case(d):
     for i, legal_action in enumerate(action_mask):
         if not legal_action:
             d.insert(i, 0)
-    return [state, action_mask, d]
+    d = np.array(d)
+    return [state, action_mask, (d / sum(d)).tolist()]
 
 # Trains n_models models
 def train_models(hex_n, n_actual_games, n_search_games, epsilon, learning_rate, hidden_layer_sizes, 
